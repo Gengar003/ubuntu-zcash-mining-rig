@@ -93,14 +93,12 @@ sudo apt-get install -y cuda nvidia-settings
 
 # set "nomodeset" so we can boot
 # https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
-
-# not the most elegant, but should work.
-sudo sh -c "echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"nosplash nomodeset\\\"\" >> /etc/default/grub"
+sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
 
 # activate nvidia drivers
 sudo nvidia-xconfig --cool-bits=4 # allow direct fan control
-sudo nvidia-xconfig --allow-empty-initial-configuration # for headless use
-sudo update-initramfs -u # only if encrypted disk
+sudo nvidia-xconfig --allow-empty-initial-configuration # allow headless use
+sudo update-initramfs -u # only NEEDED if using full-disk encryption; should be harmless if not
 
 # Remove non-nvidia drivers
 # may ruin system? Skip for now.
