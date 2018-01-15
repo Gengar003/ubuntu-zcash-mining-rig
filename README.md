@@ -1,10 +1,10 @@
 NVidia ZCash Miner on Ubuntu
 ==============================
 
-Scripts to configure an [*Ubuntu*](https://www.ubuntu.com/download) installation to mine [*ZCash*](https://z.cash/) with [*EWBF Miner*](https://github.com/nanopool/ewbf-miner) on an *NVidia* GPU, as part of the [FlyPool](http://zcash.flypool.org) mining pool.
-Remote monitoring of the miner with [DataDog](https://www.datadoghq.com/) is supported if you have a DataDog account.
+Scripts to configure an [**Ubuntu**](https://www.ubuntu.com/download) installation to mine [**ZCash**](https://z.cash/) with [**EWBF Miner**](https://github.com/nanopool/ewbf-miner) on an **NVidia** GPU, as part of the [**FlyPool**](http://zcash.flypool.org) mining pool.
+Remote monitoring of the miner with [**DataDog**](https://www.datadoghq.com/) is supported if you have a DataDog account.
 
-You've got to provide your own, internet-connected Ubuntu installation but these scripts should be able to take care of the rest.
+You've got to provide your own internet-connected Ubuntu installation but these scripts should be able to take care of the rest.
 
 Getting Started
 ==============================
@@ -12,11 +12,14 @@ Getting Started
 Pre-Requisites
 -------------------------
 
-1. A working, contemporary Ubuntu installation. These scripts have been tested on
-	1. Ubuntu Desktop 17.10
-	2. ~Ubuntu Desktop 16.04~
-	3. ~Ubuntu Server 17.10~
-	4. ~Ubuntu Server 16.04~
+| Ubuntu Version | Tested? | Works? |
+| -------------- | ------- | ------ |
+| Desktop 17.10  | ✔       | ✔      |
+| Desktop 16.04  |         |        |
+| Server 17.10   |         |        |
+| Server 16.04   |         |        |
+
+1. A working, contemporary Ubuntu installation (see chart above).
 2. A ZCash t-address
 3. (optional) a DataDog API key for your DataDog account
 4. A modern NVidia GPU
@@ -31,6 +34,11 @@ Installation
 
 Modules
 ==============================
+
+1. [`00-nvidia.sh`](#00-nvidiash)
+2. [`10-rig.sh`](#10-rigsh)
+3. [`20-miner.sh`](#20-minersh)
+4. [`30-datadog.sh`](#30-datadogsh)
 
 Each module is _idempotent_: You can run them multiple times without worry about messing up your system.
 
@@ -89,6 +97,12 @@ Installs DataDog monitoring of mining activities.
 
 If you provide a DataDog API key, this script will install the `dd-agent` and set up monitoring of the various aspects of your mining operation.
 
+**Checks:**
+
+1. [Miner Process](#miner-process)
+2. [NVidia GPU Metrics](#nvidia-gpu-metrics)
+3. [EWBF Hashrate](#ewbf-hashrate)
+
 ### Miner Process ###
 
 * Config: [`/etc/dd-agent/conf.d/systemd-unit.yaml`](datadog/conf.d/systemd-unit.yaml)
@@ -134,7 +148,7 @@ instances:
  [{}]
 ```
 
-### Hashrate ###
+### EWBF Hashrate ###
 
 * Config: [`/etc/dd-agent/conf.d/ewbf-hashrate.yaml`](datadog/conf.d/ewbf-hashrate.yaml)
 * Check: [`/etc/dd-agent/checks.d/ewbf-hashrate.py`](datadog/checks.d/ewbf-hashrate.py)
