@@ -60,7 +60,7 @@ In this case, use the `--nvidia-ubuntu-version` flag to provide the correct iden
 
 The script will instruct you to do this if necessary.
 
-`10-righ.sh`
+`10-rig.sh`
 -------------------------
 
 Sets up the Ubuntu Linux environment for a primarily-unattended mining rig.
@@ -163,7 +163,7 @@ The first capture group should be the GPU index, and the second capture group sh
 #### `max_log_line_age_minutes`
 
 `journaltcl` buffers output occasionally.
-DataDog only checks occasionaly.
+DataDog only checks occasionally.
 
 This check will read the latest entries in the journal for the miner from the bottom-up, until it finds a line that reports per-GPU hashrate.
 However, even if mining has stopped, these log lines will still be present.
