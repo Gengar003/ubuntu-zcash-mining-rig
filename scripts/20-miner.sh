@@ -76,3 +76,16 @@ EOF
 sudo mv /tmp/miner-zec-ewbf.service /etc/systemd/system/miner-zec-ewbf.service
 sudo systemctl daemon-reload
 sudo systemctl enable miner-zec-ewbf
+
+# 62 wide, 60 usable, 58 used
+cat << EOF
++===========================================================+
+| EWBF ZCash Miner installed as a system service            |
+|                                                           |
+| Edit /etc/systemd/system/miner-zec-ewbf.service to make   |
+| changes.                                                  |
+|                                                           |
+| Run `systemctl start miner-zec-ewbf` to start now!        |
++===========================================================+
+EOF
+

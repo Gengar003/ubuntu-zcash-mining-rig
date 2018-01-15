@@ -95,12 +95,11 @@ sudo apt-get install -y cuda nvidia-settings
 # https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
 
 # not the most elegant, but should work.
-sudo sh -c "echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet splash nomodeset\\\"\" >> /etc/default/grub"
+sudo sh -c "echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"nosplash nomodeset\\\"\" >> /etc/default/grub"
 
 # activate nvidia drivers
 sudo nvidia-xconfig --cool-bits=4 # allow direct fan control
 sudo update-initramfs -u # only if encrypted disk
-sudo restart gdm # only if ubuntu desktop
 
 # Remove non-nvidia drivers
 # may ruin system? Skip for now.
@@ -112,3 +111,17 @@ sudo restart gdm # only if ubuntu desktop
 
 # remove useless things that the internet says cause trouble with NVidia
 sudo apt-get remove -y fwupd
+
+# 62 wide, 60 usable, 58 used
+cat << EOF
++===========================================================+
+| NVidia drivers installed                                  |
+|                                                           |
+| As far as I can tell, you must actually reboot before     |
+| they are guaranteed to take effect.                       |
+|                                                           |
+| Proceeding without rebooting may not work properly.       |
++===========================================================+
+EOF
+
+# TODO: some kind of graceful reboot

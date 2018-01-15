@@ -37,3 +37,11 @@ sudo apt-get autoremove
 
 # upgrade what we can
 sudo apt-get upgrade
+
+# 62 wide, 60 usable, 58 used
+cat << EOF
++===========================================================+
+| Mining Rig Configured                                     |
++===========================================================+
+EOF
+
