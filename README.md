@@ -28,9 +28,20 @@ Installation
 -------------------------
 
 1. Clone this repository. You may need to run `sudo apt-get update && apt-get install git` if the installation is brand-new.
-2. Run `setup.sh`
+2. Run `setup.sh`, providing at least a ZCash t-address:
+	```
+	./setup.sh --zcash-address tsomethingsomethingsomething
+	```
+	1. If you have a DataDog account, you can provide your API key to enable monitoring the mining rig:
+		```
+		./setup.sh \
+			--zcash-address tsomethingsomethingsomething \
+			-datadog-api-key f00fd00fsomethingsomething
+		```
 3. When setup completes successfully, run `systemctl start miner-zec-ewbf`.
 4. Done!
+
+### More Options ###
 
 Modules
 ==============================
