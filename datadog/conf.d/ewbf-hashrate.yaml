@@ -1,0 +1,6 @@
+init_config:
+ ewbf_gpu_hashrate_regex: 'GPU([0-9]+): ([0-9]+) Sol/s'
+ max_log_line_age_minutes: 5
+
+instances:
+ [{}]

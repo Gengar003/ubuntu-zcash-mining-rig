@@ -2,7 +2,7 @@ import subprocess
 import re
 from checks import AgentCheck
 
-class HelloCheck(AgentCheck):
+class NVidiaGPUCheck(AgentCheck):
 
 	def check(_self, _instance):
 		gpu_metrics_output = subprocess.check_output([
