@@ -60,7 +60,7 @@ Installs NVidia GPU and CUDA drivers.
 
 | Command-Line Flag                | Required? | Purpose                                       |
 | -------------------------------- | --------- | --------------------------------------------- |
-| `--nvidia-ubuntu-version` / `-v` | ✔         | Identify the NVidia release of Ubuntu Drivers |
+| `--nvidia-ubuntu-version` / `-v` |           | Identify the NVidia release of Ubuntu Drivers |
 
 ### `--nvidia-ubuntu-version`
 
