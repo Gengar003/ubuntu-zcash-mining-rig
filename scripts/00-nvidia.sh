@@ -99,6 +99,7 @@ sudo sh -c "echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"nosplash nomodeset\\\"\" >> /e
 
 # activate nvidia drivers
 sudo nvidia-xconfig --cool-bits=4 # allow direct fan control
+sudo nvidia-xconfig --allow-empty-initial-configuration # for headless use
 sudo update-initramfs -u # only if encrypted disk
 
 # Remove non-nvidia drivers
