@@ -1,0 +1,5 @@
+init_config:
+ gpu_metric_names: "temperature.gpu,fan.speed,power.draw,memory.used,utilization.memory,utilization.gpu"
+
+instances:
+ [{}]
