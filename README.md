@@ -36,7 +36,7 @@ Installation
 		```
 		./setup.sh \
 			--zcash-address tsomethingsomethingsomething \
-			-datadog-api-key f00fd00fsomethingsomething
+			--datadog-api-key f00fd00fsomethingsomething
 		```
 3. When setup completes successfully, run `systemctl start miner-zec-ewbf`.
 4. Done!
