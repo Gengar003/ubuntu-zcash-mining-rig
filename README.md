@@ -117,7 +117,7 @@ If you provide a DataDog API key, this script will install the `dd-agent` and se
 ### Miner Process ###
 
 * Config: [`/etc/dd-agent/conf.d/systemd-unit.yaml`](datadog/conf.d/systemd-unit.yaml)
-* Check: [`/etc/dd-agent/checks.d/systemd-unit.py`](datadog/checks.d/systemd-unit.yaml)
+* Check: [`/etc/dd-agent/checks.d/systemd-unit.py`](datadog/checks.d/systemd-unit.py)
 
 This can actually monitor _any_ systemd process!
 By default, it monitors the miner that would be installed by the miner-installation script.
