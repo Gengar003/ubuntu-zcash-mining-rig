@@ -6,6 +6,12 @@ Remote monitoring of the miner with [**DataDog**](https://www.datadoghq.com/) is
 
 You've got to provide your own internet-connected Ubuntu installation but these scripts should be able to take care of the rest.
 
+TODOs
+-------------------------
+
+* [ ] remove all graphics drivers _except_ NVidia, after driver install
+* [ ] verify scripts on other Ubuntu configurations
+
 Getting Started
 ==============================
 

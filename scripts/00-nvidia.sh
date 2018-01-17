@@ -119,7 +119,7 @@ if [ -e ~/.nvidia-version ] && [ "${JUST_INSTALLED_NVIDIA_VERSION}" == "$(cat ~/
 	# The current nvidia drivers are also the latest.
 	# there is no need to reboot.
 	# 62 wide, 60 usable, 58 used
-	cat << EOF
+	cat <<- EOF
 	+===========================================================+
 	| NVidia drivers installed                                  |
 	+===========================================================+
@@ -132,7 +132,7 @@ else
 	echo "${JUST_INSTALLED_NVIDIA_VERSION}" > ~/.nvidia-version
 
 	# 62 wide, 60 usable, 58 used
-	cat << EOF
+	cat <<- EOF
 	+===========================================================+
 	| NVidia drivers installed                                  |
 	|                                                           |
