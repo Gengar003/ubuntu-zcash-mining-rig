@@ -58,7 +58,7 @@ DD_API_KEY=${DATADOG_API_KEY} bash -c "$(curl -L https://raw.githubusercontent.c
 #####
 
 # DataDog will need to read the journalctl
-usermod -a -G systemd-journal dd-agent
+sudo usermod -a -G systemd-journal dd-agent
 
 # prepare the checks
 chmod a+rx ../resources/datadog/etc/dd-agent/checks.d/*
