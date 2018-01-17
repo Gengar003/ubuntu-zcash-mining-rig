@@ -14,9 +14,9 @@ Pre-Requisites
 
 | Ubuntu Version | Tested? | Works? |
 | -------------- | ------- | ------ |
-| Desktop 17.10  | ✔       | ✔      |
+| Desktop 17.10  |         |        |
 | Desktop 16.04  |         |        |
-| Server 17.10   |         |        |
+| Server 17.10   | ✔       | ✔      |
 | Server 16.04   |         |        |
 
 1. A working, contemporary Ubuntu installation (see chart above).
@@ -41,7 +41,20 @@ Installation
 3. When setup completes successfully, run `systemctl start miner-zec-ewbf`.
 4. Done!
 
-### More Options ###
+Advanced Setup
+==============================
+
+Automatic Login on Ubuntu "Server"
+-------------------------
+
+If you have a headless Ubuntu "server" installation and you want the machine to log in and start mining automatically whenever it powers on, run this command:
+
+```
+MINER_USER=$(whoami) envsubst < \
+	./resources/autologin/etc/systemd/system/getty@tty1.service.d/override.conf.template | \
+	sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf \
+	>/dev/null
+```
 
 Modules
 ==============================
@@ -116,8 +129,8 @@ If you provide a DataDog API key, this script will install the `dd-agent` and se
 
 ### Miner Process ###
 
-* Config: [`/etc/dd-agent/conf.d/systemd-unit.yaml`](datadog/conf.d/systemd-unit.yaml)
-* Check: [`/etc/dd-agent/checks.d/systemd-unit.py`](datadog/checks.d/systemd-unit.py)
+* Config: [`/etc/dd-agent/conf.d/systemd-unit.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-unit.yaml)
+* Check: [`/etc/dd-agent/checks.d/systemd-unit.py`](resources/datadog/etc/dd-agent/checks.d/systemd-unit.py)
 
 This can actually monitor _any_ systemd process!
 By default, it monitors the miner that would be installed by the miner-installation script.
@@ -135,8 +148,8 @@ instances:
 
 ### NVidia GPU Metrics ###
 
-* Config: [`/etc/dd-agent/conf.d/nvidia-gpu.yaml`](datadog/conf.d/nvidia-gpu.yaml)
-* Check: [`/etc/dd-agent/checks.d/nvidia-gpu.py`](datadog/checks.d/nvidia-gpu.py)
+* Config: [`/etc/dd-agent/conf.d/nvidia-gpu.yaml`](resources/datadog/etc/dd-agent/conf.d/nvidia-gpu.yaml)
+* Check: [`/etc/dd-agent/checks.d/nvidia-gpu.py`](resources/datadog/etc/dd-agent/checks.d/nvidia-gpu.py)
 
 This uses the [`nvidia-smi`](https://developer.nvidia.com/nvidia-system-management-interface) tool to query the GPUs.
 
@@ -161,8 +174,8 @@ instances:
 
 ### EWBF Hashrate ###
 
-* Config: [`/etc/dd-agent/conf.d/ewbf-hashrate.yaml`](datadog/conf.d/ewbf-hashrate.yaml)
-* Check: [`/etc/dd-agent/checks.d/ewbf-hashrate.py`](datadog/checks.d/ewbf-hashrate.py)
+* Config: [`/etc/dd-agent/conf.d/ewbf-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/ewbf-hashrate.yaml)
+* Check: [`/etc/dd-agent/checks.d/ewbf-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/ewbf-hashrate.py)
 
 Reads the `systemctl` journal with `journalctl` to see the EWBF miner's log output, and finds the parts where it reported per-GPU solutions-per-second metrics.
 
@@ -185,8 +198,8 @@ but there is still a log line that shows a non-zero hash rate.
 Troubleshooting
 ==============================
 
-Activating NVidia Drivers
+Running off USB
 -------------------------
+If you run these scripts off of a USB drive, that drive must use a file system that supports POSIX-style permissoins (i.e. can `chmod`).
 
-A restart may or may not be required after installing NVidia GPU drivers.
-If the miner script cannot install the miner and produces error messages, restart the machine and try again.
+If your USB drive does not (e.g. if it's formatted with the very-common `fat32` format), you must copy these scripts off of it, first.

@@ -111,16 +111,40 @@ sudo update-initramfs -u # only NEEDED if using full-disk encryption; should be 
 # remove useless things that the internet says cause trouble with NVidia
 sudo apt-get remove -y fwupd
 
-# 62 wide, 60 usable, 58 used
-cat << EOF
-+===========================================================+
-| NVidia drivers installed                                  |
-|                                                           |
-| As far as I can tell, you must actually reboot before     |
-| they are guaranteed to take effect.                       |
-|                                                           |
-| Proceeding without rebooting may not work properly.       |
-+===========================================================+
-EOF
 
-# TODO: some kind of graceful reboot
+JUST_INSTALLED_NVIDIA=$(dpkg -l | awk -F '[ -]' '/nvidia-[0-9]+/{print $4}' | sort -r | head -n 1)
+
+if [ -e ~/.nvidia-version ] && [ "${JUST_INSTALLED_NVIDIA_VERSION}" == "$(cat ~/.nvidia-version)" ]; then
+	# The installer has run previously, because the nvidia version is recorded.
+	# The current nvidia drivers are also the latest.
+	# there is no need to reboot.
+	# 62 wide, 60 usable, 58 used
+	cat << EOF
+	+===========================================================+
+	| NVidia drivers installed                                  |
+	+===========================================================+
+	EOF
+else
+	# Either there is no record of nvidia driver installation (meaning probably the first time)
+	# or they are outdated (meaning we probably installed new ones)
+	# need to reboot.
+
+	echo "${JUST_INSTALLED_NVIDIA_VERSION}" > ~/.nvidia-version
+
+	# 62 wide, 60 usable, 58 used
+	cat << EOF
+	+===========================================================+
+	| NVidia drivers installed                                  |
+	|                                                           |
+	| It looks like this version hasn't been installed before.  |
+	| Your computer will now reboot.                            |
+	|                                                           |
+	| Please run these scripts again when you log back in.      |
+	| You will not have to reboot a second time.                |
+	+===========================================================+
+	EOF
+
+	read -p "Press any key to reboot... "
+
+	reboot
+fi

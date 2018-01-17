@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ "0" == $(id -u) ]; then
+	echo "ERROR: Do not run these scripts as 'root'."
+	exit 1
+fi
+
 set -e
 
 cd scripts
