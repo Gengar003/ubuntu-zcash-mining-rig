@@ -61,12 +61,12 @@ DD_API_KEY=${DATADOG_API_KEY} bash -c "$(curl -L https://raw.githubusercontent.c
 usermod -a -G systemd-journal dd-agent
 
 # prepare the checks
-chmod a+rx ../datadog/checks.d/*
-chmod a+r ../datadog/conf.d/*
+chmod a+rx ../resources/datadog/etc/dd-agent/checks.d/*
+chmod a+r ../resources/datadog/etc/dd-agent/conf.d/*
 
 # Install the checks
-sudo cp -rfva ../datadog/checks.d/. /etc/dd-agent/checks.d
-sudo cp -rfva ../datadog/conf.d/. /etc/dd-agent/conf.d
+sudo cp -rfva ../resources/datadog/etc/dd-agent/checks.d/. /etc/dd-agent/checks.d
+sudo cp -rfva ../resources/datadog/etc/dd-agent/conf.d/. /etc/dd-agent/conf.d
 
 # Give the checks to Datadog
 sudo chown -R dd-agent /etc/dd-agent/conf.d

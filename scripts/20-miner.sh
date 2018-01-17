@@ -59,65 +59,54 @@ set -e
 EWBF_URL=$(curl --silent https://api.github.com/repos/nanopool/ewbf-miner/releases | jq -r '.[0].assets[] | select( .name | contains("Linux") ) | .browser_download_url')
 wget -qO /tmp/ewbf.tar.gz "${EWBF_URL}"
 tar -zxvf /tmp/ewbf.tar.gz -C /tmp/
-cp /tmp/miner ~/bin/miner-zec-ewbf
+
+# install miner
+sudo mkdir -p /opt/miners/zec
+sudo cp /tmp/miner /opt/miners/zec/ewbf
+sudo chmod a+rx /opt/miners/zec/ewbf
 
 # test ewbfminer
-miner-zec-ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.ewbf_test --pass x --port 3333 --cuda_devices 0 --fee 0 --intensity 64 &
+/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.ewbf_test --pass x --port 3333 --cuda_devices 0 --fee 0 --intensity 64 &
 sleep 10
-sudo pkill miner-zec-ewbf
+sudo pkill ewbf
 
 # install ewbfminer as service
-CURR_USER=$(whoami)
-HOSTNAME=$(hostname)
-GDM_USER=$(id -u gdm)
+export MINER_USER=$(whoami)
+export HOSTNAME=$(hostname)
 
-if [ -z "FAN_DURING_MINING" ]; then
+export EXPORTED_ZCASH_ADDRESS=${ZCASH_ADDRESS}
+
+if [ -z "${FAN_DURING_MINING}" ]; then
 	# no "fan during mining" specified; leave fans on auto.
-	sudo cat <<- EOF > /tmp/miner-zec-ewbf.service
-	[Unit]
-	Description=EWBF ZCash Miner
-	After=network.target
-	
-	[Service] 
-	Type=simple
-	User=${CURR_USER}
-	WorkingDirectory=/home/${CURR_USER}/bin
-	ExecStart=/home/${CURR_USER}/bin/miner-zec-ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64
-	Restart=always
-	
-	[Install] 
-	WantedBy=multi-user.target
-	EOF
+	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS}' < ../resources/miner/etc/systemd/system/miner-zec-ewbf.service.template > /tmp/miner-zec-ewbf.service
 else
 	# user specified a "fan during mining" setting.
-	sudo cat <<- EOF > /tmp/miner-zec-ewbf.service
-[Unit]
-	Description=EWBF ZCash Miner
-	After=network.target
-	
-	[Service]
-	Environment=ZCASH_ADDRESS=${ZCASH_ADDRESS}
-	Environment=FAN_DURING_MINING=${FAN_DURING_MINING}
-	
-	Environment=DISPLAY=:1
-	Environment=XAUTHORITY=/run/user/${GDM_USER}/gdm/Xauthority
-	
-	Type=simple
-	User=${CURR_USER}
-	WorkingDirectory=/home/${CURR_USER}/bin
-	
-	ExecStartPre=/bin/bash --login -c "/usr/bin/nvidia-settings -a '[gpu:0]/GPUFanControlState=1' -a \\"[fan:0]/GPUTargetFanSpeed=\${FAN_DURING_MINING}\\" -a '[gpu:1]/GPUFanControlState=1' -a \\"[fan:1]/GPUTargetFanSpeed=\${FAN_DURING_MINING}\\""
-	
-	ExecStart=/bin/bash --login -c "miner-zec-ewbf --server eu1-zcash.flypool.org --user \${ZCASH_ADDRESS}.kinglear --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64"
-	
-	ExecStopPost=/usr/bin/nvidia-settings -a "[gpu:0]/GPUFanControlState=0" -a "[gpu:1]/GPUFanControlState=0"
-	
-	Restart=always
-	
-	[Install]
-	WantedBy=multi-user.target
-	EOF
+	# nvidia-settings must be used, and it must be given a "working" display.
+
+	if id -u gdm >/dev/null 2>&1; then
+		# This is (probably) Ubuntu "Desktop"
+		export NVIDIA_FAN_DISPLAY=:1
+		export NVIDIA_FAN_XAUTHORITY=/run/user/$(id -u gdm)/gdm/Xauthority
+	elif id -u lightdm > /dev/null 2>&1; then
+		# This is (probably) Ubuntu "Server"
+		export NVIDIA_FAN_DISPLAY=:0
+		export NVIDIA_FAN_XAUTHORITY=/var/run/lightdm/root/${NVIDIA_FAN_DISPLAY}
+	else
+		# This probably isn't going to work.
+		echo "ERROR: Explicit fan control requested, but this requires nvidia-settings which requires a display, and I couldn't find any displays that I knew would work."
+		echo -e "\tConsider not using explicit fan control (remove the --fan-during-mining flag)"
+		exit 1
+	fi
+
+	export EXPORTED_FAN_DURING_MINING=${FAN_DURING_MINING}
+	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS},${EXPORTED_FAN_DURING_MINING},${NVIDIA_FAN_DISPLAY},${NVIDIA_FAN_XAUTHORITY}' \
+		< ../resources/miner/etc/systemd/system/miner-zec-ewbf-fan.service.template \
+		> /tmp/miner-zec-ewbf.service
 fi
+
+echo "===================="
+cat /tmp/miner-zec-ewbf.service
+echo "===================="
 
 sudo mv /tmp/miner-zec-ewbf.service /etc/systemd/system/miner-zec-ewbf.service
 sudo systemctl daemon-reload

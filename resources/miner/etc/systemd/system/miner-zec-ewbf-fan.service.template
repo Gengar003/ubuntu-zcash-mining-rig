@@ -1,0 +1,28 @@
+[Unit]
+Description=EWBF ZCash Miner
+After=network.target
+
+[Service]
+Environment=ZCASH_ADDRESS=${EXPORTED_ZCASH_ADDRESS}
+Environment=FAN_DURING_MINING=${EXPORTED_FAN_DURING_MINING}
+
+Environment=DISPLAY=${NVIDIA_FAN_DISPLAY}
+Environment=XAUTHORITY=${NVIDIA_FAN_XAUTHORITY}
+
+Type=simple
+User=${MINER_USER}
+PermissionsStartOnly=true
+WorkingDirectory=/opt/miners/zec
+
+ExecStartPre=/usr/bin/nvidia-settings -a '[gpu:0]/GPUFanControlState=1' -a "[fan:0]/GPUTargetFanSpeed=${FAN_DURING_MINING}" -a '[gpu:1]/GPUFanControlState=1' -a "[fan:1]/GPUTargetFanSpeed=${FAN_DURING_MINING}"
+
+ExecStart=/bin/bash --login -c "/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64 --eexit"
+
+ExecStopPost=/usr/bin/nvidia-settings -a "[gpu:0]/GPUFanControlState=0" -a "[gpu:1]/GPUFanControlState=0"
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
