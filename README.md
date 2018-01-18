@@ -6,6 +6,15 @@ Remote monitoring of the miner with [**DataDog**](https://www.datadoghq.com/) is
 
 You've got to provide your own internet-connected Ubuntu installation but these scripts should be able to take care of the rest.
 
+1. [Getting Started](#getting-started)
+2. [Advanced Setup](#advanced-setup)
+3. [Setup Modules](#setup-modules)
+	1. [NVidia Drivers](#00-nvidiash)
+	2. [System](#10-rigsh)
+	3. [EWBF Miner](#20-minersh)
+	4. [DataDog Monitoring](#30-datadogsh)
+4. [Troubleshooting](#troubleshooting)
+
 TODOs
 -------------------------
 
@@ -61,7 +70,7 @@ MINER_USER=$(whoami) envsubst < \
 	>/dev/null
 ```
 
-Modules
+Setup Modules
 ==============================
 
 1. [`00-nvidia.sh`](#00-nvidiash)
