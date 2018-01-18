@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 #####
+# Global Settings
+#####
+
+#####
 # Read Input
 #####
 
@@ -33,10 +37,10 @@ done
 sudo apt-get install -y jq curl openssh-server openssh-client ubuntu-drivers
 
 # remove other useless things
-sudo apt-get autoremove
+sudo apt-get -y autoremove
 
 # upgrade what we can
-sudo apt-get upgrade
+sudo apt-get -y upgrade
 
 # 62 wide, 60 usable, 58 used
 cat << EOF

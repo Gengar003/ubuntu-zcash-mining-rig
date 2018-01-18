@@ -111,7 +111,7 @@ fi
 sudo apt-get install -y cuda nvidia-settings
 
 # Remove non-nvidia drivers
-sudo apt-get --purge remove xserver-xorg-video-nouveau
+sudo apt-get purge -y xserver-xorg-video-nouveau
 
 # configure NVidia drivers
 sudo nvidia-xconfig --cool-bits=4 # enable direct fan control

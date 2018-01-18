@@ -57,6 +57,8 @@ Installation
 3. When setup completes successfully, run `systemctl start miner-zec-ewbf`.
 4. Done!
 
+* *Note:* If you change your GPU hardware or the machine's `hostname`, you will need to run these scripts again.
+
 Advanced Setup
 ==============================
 
