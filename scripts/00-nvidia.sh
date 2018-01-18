@@ -120,13 +120,9 @@ sudo nvidia-xconfig --enable-all-gpus #(you can figure this one out)
 # configure support for headless operation (there probably won't be a monitor on EVERY GPU)
 sudo nvidia-xconfig --allow-empty-initial-configuration
 
-if id -u gdm >/dev/null 2>&1; then
-	# This is (probably) Ubuntu "Desktop"
-
-	# set "nomodeset" so we can boot to the GUI
-	# https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
-	sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
-fi
+# set "nomodeset" so GRUB can still boot to a GUI if someone does connect a monitor
+# https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
+sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
 
 # only NEEDED if using full-disk encryption; appears harmless if not
 sudo update-initramfs -u
