@@ -194,6 +194,7 @@ Metrics are reported to DataDog with the same name as used in the configuration 
 
 If the only thing you cared about was GPU temperature, you could reduce the provided YAML to
 
+`/etc/dd-agent/conf.d/nvidia-gpu.yaml`
 ```yaml
 init_config:
  gpu_metric_names: "temperature.gpu"
@@ -219,6 +220,7 @@ and finds the parts where the miner reports per-gpu hash rate.
 
 Multiple instances may be configured to check hash rate from additional `systemd` units, e.g.
 
+`/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml`
 ```yaml
 init_config:
  max_log_line_age_minutes: 5
