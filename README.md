@@ -72,6 +72,9 @@ MINER_USER=$(whoami) envsubst < \
 	>/dev/null
 ```
 
+* You must not have full-disk encryption enabled.
+* You must not have "home directory" encryption enabled.
+
 Setup Modules
 ==============================
 
