@@ -170,7 +170,7 @@ instances:
 
 This uses the [`nvidia-smi`](https://developer.nvidia.com/nvidia-system-management-interface) tool to query the GPUs.
 
-#### config.`gpu_metric_names`
+#### `gpu_metric_names`
 
 A comma-separated list of metrics to query is provided in the YAML file.
 These are provided directly to the `--query-gpu` flag of `nvidia-smi`.
@@ -189,7 +189,7 @@ instances:
  [{}]
 ```
 
-### Systemd Unit Hashrate ###
+### Hashrate ###
 
 * Config: [`/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml)
 * Check: [`/etc/dd-agent/checks.d/systemd-unit-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/systemd-unit-hashrate.py)
@@ -217,7 +217,7 @@ instances:
    gpu_hashrate_regex: 'gpu #([0-9]+) - ([0-9]+) hashes'
 ```
 
-#### `init_config.max_log_line_age_minutes`
+#### `max_log_line_age_minutes`
 
 `journaltcl` buffers output occasionally.
 DataDog only checks occasionally.
@@ -228,7 +228,7 @@ However, even if mining has stopped, these log lines will still be present.
 This setting allows a maximum age to be configured to avoid the situation where mining ended long ago,
 but there is still a log line that shows a non-zero hash rate.
 
-#### `instance.gpu_hashrate_regex`
+#### `gpu_hashrate_regex`
 
 The regular expression used to find the per-GPU metrics is configurable.
 The first capture group should be the GPU index, and the second capture group should be the metric.
