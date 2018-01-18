@@ -9,7 +9,6 @@ You've got to provide your own internet-connected Ubuntu installation but these 
 TODOs
 -------------------------
 
-* [ ] remove all graphics drivers _except_ NVidia, after driver install
 * [ ] verify scripts on other Ubuntu configurations
 
 Getting Started
