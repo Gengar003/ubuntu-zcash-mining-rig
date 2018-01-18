@@ -100,7 +100,7 @@ if [ -e ~/.nvidia-driver ]; then
 	fi
 else
 	# nvidia drivers have not been installed by this script before
-	# purge all existing nvidia drivers and remove nouveau, too.
+	# purge all existing nvidia drivers.
 	sudo apt-get purge -y nvidia-*
 fi
 
@@ -111,20 +111,22 @@ fi
 sudo apt-get install -y cuda nvidia-settings
 
 # Remove non-nvidia drivers
-# may ruin system? Skip for now.
 sudo apt-get --purge remove xserver-xorg-video-nouveau
-
-# set "nomodeset" so we can boot
-# https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
-sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
 
 # configure NVidia drivers
 sudo nvidia-xconfig --cool-bits=4 # enable direct fan control
 sudo nvidia-xconfig --enable-all-gpus #(you can figure this one out)
 
-# configure support for headless operation
-sudo nvidia-xconfig --allow-empty-initial-configuration # enable GPUs w/out a monitor
-# sudo nvidia-xconfig --separate-x-screens # I do not know WHY this was necessary but w/out it only gpu0 would connect to an X display, meaning only gpu0 could be managed with nvidia-settings
+# configure support for headless operation (there probably won't be a monitor on EVERY GPU)
+sudo nvidia-xconfig --allow-empty-initial-configuration
+
+if id -u gdm >/dev/null 2>&1; then
+	# This is (probably) Ubuntu "Desktop"
+
+	# set "nomodeset" so we can boot to the GUI
+	# https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
+	sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
+fi
 
 # only NEEDED if using full-disk encryption; appears harmless if not
 sudo update-initramfs -u
