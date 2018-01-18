@@ -8,7 +8,7 @@ class SystemdUnitCheck(AgentCheck):
 			"systemctl",
 			"is-active",
 			"--quiet",
-			_instance.get( "name" ) ])
+			_instance.get( "unit" ) ])
 
 		service_status = AgentCheck.UNKNOWN
 
@@ -18,5 +18,6 @@ class SystemdUnitCheck(AgentCheck):
 			service_status = AgentCheck.CRITICAL
 
 		_self.service_check(
-			"systemd." + _instance.get( "name" ),
-			service_status )
+			"systemd." + _instance.get( "unit" ),
+			service_status,
+			tags=["systemd.unit:" + _instance.get( "unit" ) ] )

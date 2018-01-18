@@ -14,14 +14,18 @@ User=${MINER_USER}
 PermissionsStartOnly=true
 WorkingDirectory=/opt/miners/zec
 
+ExecStartPre=/usr/bin/X & /bin/sleep 5 
 ExecStartPre=/usr/bin/nvidia-settings -a '[gpu:0]/GPUFanControlState=1' -a "[fan:0]/GPUTargetFanSpeed=${FAN_DURING_MINING}" -a '[gpu:1]/GPUFanControlState=1' -a "[fan:1]/GPUTargetFanSpeed=${FAN_DURING_MINING}"
+ExecStartPre=/usr/bin/pkill X
 
 ExecStart=/bin/bash --login -c "/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64 --eexit"
 
+ExecStartPre=/usr/bin/X & /bin/sleep 5 
 ExecStopPost=/usr/bin/nvidia-settings -a "[gpu:0]/GPUFanControlState=0" -a "[gpu:1]/GPUFanControlState=0"
+ExecStartPre=/usr/bin/pkill X
 
 Restart=always
-RestartSec=5
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target

@@ -14,7 +14,7 @@ WorkingDirectory=/opt/miners/zec
 ExecStart=/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64 --eexit
 
 Restart=always
-RestartSec=5
+RestartSec=10
 
 [Install] 
 WantedBy=multi-user.target

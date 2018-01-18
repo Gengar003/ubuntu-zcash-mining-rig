@@ -85,24 +85,49 @@ sudo pkill plymouth || true # (it might not be running...)
 sudo apt-get update
 
 # install nvidia drivers
-NVIDIA_DRIVER=$(sudo ubuntu-drivers devices | awk '/driver.*?nvidia/{print $3}' | sort -r | head -n 1)
-sudo apt-get install -y ${NVIDIA_DRIVER}
+LATEST_NVIDIA_DRIVER=$(sudo ubuntu-drivers devices | awk '/driver.*?nvidia/{print $3}' | sort -r | head -n 1)
+LATEST_CUDA_NVIDIA_DRIVER=$(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends cuda | gawk 'match($0, /(nvidia-[0-9]+)/, ary) {print ary[1]}' | sort -r | head -n 1)
 
-# install CUDA drivers
+if [ -e ~/.nvidia-driver ]; then
+	# nvidia drivers have been installed BY THIS SCRIPT previously.
+	CURRENT_NVIDIA_DRIVER=$(cat ~/.nvidia-driver)
+
+	if [ "${CURRENT_NVIDIA_DRIVER}" != "${LATEST_CUDA_NVIDIA_DRIVER}" ]; then
+		# cuda wants a different nvidia driver version than what is installed.
+		# need to purge all nvidia drivers and re-install
+		rm -f ~/.nvidia-driver
+		sudo apt-get purge -y nvidia-*
+	fi
+else
+	# nvidia drivers have not been installed by this script before
+	# purge all existing nvidia drivers and remove nouveau, too.
+	sudo apt-get purge -y nvidia-*
+fi
+
+# sometimes nvidia drivers run ahead of what CUDA supports. Don't install them.
+# sudo apt-get install -y ${NVIDIA_DRIVER}
+
+# install (latest) CUDA drivers
 sudo apt-get install -y cuda nvidia-settings
+
+# Remove non-nvidia drivers
+# may ruin system? Skip for now.
+sudo apt-get --purge remove xserver-xorg-video-nouveau
 
 # set "nomodeset" so we can boot
 # https://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu
 sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ c\GRUB_CMDLINE_LINUX_DEFAULT="nosplash nomodeset"' /etc/default/grub
 
-# activate nvidia drivers
-sudo nvidia-xconfig --cool-bits=4 # allow direct fan control
-sudo nvidia-xconfig --allow-empty-initial-configuration # allow headless use
-sudo update-initramfs -u # only NEEDED if using full-disk encryption; should be harmless if not
+# configure NVidia drivers
+sudo nvidia-xconfig --cool-bits=4 # enable direct fan control
+sudo nvidia-xconfig --enable-all-gpus #(you can figure this one out)
 
-# Remove non-nvidia drivers
-# may ruin system? Skip for now.
-# sudo apt-get --purge remove xserver-xorg-video-nouveau
+# configure support for headless operation
+sudo nvidia-xconfig --allow-empty-initial-configuration # enable GPUs w/out a monitor
+# sudo nvidia-xconfig --separate-x-screens # I do not know WHY this was necessary but w/out it only gpu0 would connect to an X display, meaning only gpu0 could be managed with nvidia-settings
+
+# only NEEDED if using full-disk encryption; appears harmless if not
+sudo update-initramfs -u
 
 #####
 # Housekeeping
@@ -111,8 +136,7 @@ sudo update-initramfs -u # only NEEDED if using full-disk encryption; should be 
 # remove useless things that the internet says cause trouble with NVidia
 sudo apt-get remove -y fwupd
 
-
-JUST_INSTALLED_NVIDIA=$(dpkg -l | awk -F '[ -]' '/nvidia-[0-9]+/{print $4}' | sort -r | head -n 1)
+JUST_INSTALLED_NVIDIA_VERSION=$(dpkg -l | awk -F '[ -]' '/nvidia-[0-9]+/{print $4}' | sort -r | head -n 1)
 
 if [ -e ~/.nvidia-version ] && [ "${JUST_INSTALLED_NVIDIA_VERSION}" == "$(cat ~/.nvidia-version)" ]; then
 	# The installer has run previously, because the nvidia version is recorded.
@@ -146,5 +170,5 @@ else
 
 	read -p "Press any key to reboot... "
 
-	reboot
+	sudo reboot
 fi

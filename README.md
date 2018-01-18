@@ -137,6 +137,11 @@ If you provide a DataDog API key, this script will install the `dd-agent` and se
 
 * Config: [`/etc/dd-agent/conf.d/systemd-unit.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-unit.yaml)
 * Check: [`/etc/dd-agent/checks.d/systemd-unit.py`](resources/datadog/etc/dd-agent/checks.d/systemd-unit.py)
+* Metric: `systemd.<unit name>`
+
+| Configuration Key          | Type          | Purpose                     |
+| -------------------------- | ------------- | --------------------------- |
+| `unit`                     | `instance`    | The `systemd` unit to check |
 
 This can actually monitor _any_ systemd process!
 By default, it monitors the miner that would be installed by the miner-installation script.
@@ -148,18 +153,24 @@ You can add any `systemd` units as an "instance" to monitor that one, too:
 init_config:
 
 instances:
- - name: miner-zec-ewbf
- - name: some-other-critical-service
+ - unit: miner-zec-ewbf
+ - unit: some-other-critical-service
 ```
 
 ### NVidia GPU Metrics ###
 
 * Config: [`/etc/dd-agent/conf.d/nvidia-gpu.yaml`](resources/datadog/etc/dd-agent/conf.d/nvidia-gpu.yaml)
 * Check: [`/etc/dd-agent/checks.d/nvidia-gpu.py`](resources/datadog/etc/dd-agent/checks.d/nvidia-gpu.py)
+* Metric: (subset of `nvidia-smi --query-gpu`)
+
+| Configuration Key  | Type          | Purpose                            |
+| ------------------ | ------------- | ---------------------------------- |
+| `gpu_metric_names` | `init_config` | The `nvidia-smi` metrics to report |
+
 
 This uses the [`nvidia-smi`](https://developer.nvidia.com/nvidia-system-management-interface) tool to query the GPUs.
 
-#### `gpu_metric_names`
+#### config.`gpu_metric_names`
 
 A comma-separated list of metrics to query is provided in the YAML file.
 These are provided directly to the `--query-gpu` flag of `nvidia-smi`.
@@ -178,19 +189,35 @@ instances:
  [{}]
 ```
 
-### EWBF Hashrate ###
+### Systemd Unit Hashrate ###
 
-* Config: [`/etc/dd-agent/conf.d/ewbf-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/ewbf-hashrate.yaml)
-* Check: [`/etc/dd-agent/checks.d/ewbf-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/ewbf-hashrate.py)
+* Config: [`/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml)
+* Check: [`/etc/dd-agent/checks.d/systemd-unit-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/systemd-unit-hashrate.py)
+* Metric: `gpu.hashrate`
 
-Reads the `systemctl` journal with `journalctl` to see the EWBF miner's log output, and finds the parts where it reported per-GPU solutions-per-second metrics.
+| Configuration Key          | Type          | Purpose                                   |
+| -------------------------- | ------------- | ----------------------------------------- |
+| `max_log_line_age_minutes` | `init_config` | Prevent stale logs from producing metrics |
+| `unit`                     | `instance`    | The `systemd` unit logs to read           |
+| `gpu_hashrate_regex`       | `instance`    | Parse hashrate from the `systemd` logs    |
 
-#### `ewbf_gpu_hashrate_regex`
+Reads the system journal of a `systemd` unit with `journalctl` to see miner output
+and finds the parts where the miner reports per-gpu hash rate.
 
-In case the EWBF log format changes, the regular expression used to find the per-GPU metrics is configurable.
-The first capture group should be the GPU index, and the second capture group should be the metric.
+Multiple instances may be configured to check hash rate from additional `systemd` units, e.g.
 
-#### `max_log_line_age_minutes`
+```yaml
+init_config:
+ max_log_line_age_minutes: 5
+
+instances:
+ - unit: miner-zec-ewbf
+   gpu_hashrate_regex: 'GPU([0-9]+): ([0-9]+) Sol/s'
+ - unit: some-other-miner:
+   gpu_hashrate_regex: 'gpu #([0-9]+) - ([0-9]+) hashes'
+```
+
+#### `init_config.max_log_line_age_minutes`
 
 `journaltcl` buffers output occasionally.
 DataDog only checks occasionally.
@@ -200,6 +227,11 @@ However, even if mining has stopped, these log lines will still be present.
 
 This setting allows a maximum age to be configured to avoid the situation where mining ended long ago,
 but there is still a log line that shows a non-zero hash rate.
+
+#### `instance.gpu_hashrate_regex`
+
+The regular expression used to find the per-GPU metrics is configurable.
+The first capture group should be the GPU index, and the second capture group should be the metric.
 
 Troubleshooting
 ==============================
