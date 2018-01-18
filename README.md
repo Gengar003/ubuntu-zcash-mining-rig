@@ -34,6 +34,7 @@ Pre-Requisites
 | Server 16.04   |         |        |
 
 1. A working, contemporary Ubuntu installation (see chart above).
+	1. It is best if this is a _brand new_ installation with no prior configuration and no data to lose!
 2. A ZCash t-address
 3. A modern NVidia GPU
 4. (optional) a DataDog API key for your DataDog account
