@@ -99,7 +99,15 @@ else
 	fi
 
 	export EXPORTED_FAN_DURING_MINING=${FAN_DURING_MINING}
-	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS},${EXPORTED_FAN_DURING_MINING},${NVIDIA_FAN_DISPLAY},${NVIDIA_FAN_XAUTHORITY}' \
+
+	SET_GPU_FANS_ON_START="/usr/bin/nvidia-settings"
+	SET_GPU_FANS_ON_END="/usr/bin/nvidia-settings"
+	for gpu_index in $(nvidia-smi --query-gpu=index --format=csv,noheader,nounits); do
+		export SET_GPU_FANS_ON_START="${SET_GPU_FANS_ON_START} -a \"[gpu:${gpu_index}]/GPUFanControlState=1\" -a \"[fan:${gpu_index}]/GPUTargetFanSpeed=\${FAN_DURING_MINING}\""
+		export SET_GPU_FANS_ON_END="${SET_GPU_FANS_ON_END} -a \"[gpu:${gpu_index}]/GPUFanControlState=0\""
+	done
+
+	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS},${EXPORTED_FAN_DURING_MINING},${NVIDIA_FAN_DISPLAY},${NVIDIA_FAN_XAUTHORITY},${SET_GPU_FANS_ON_START},${SET_GPU_FANS_ON_END}' \
 		< ../resources/miner/etc/systemd/system/miner-zec-ewbf-fan.service.template \
 		> /tmp/miner-zec-ewbf.service
 fi
@@ -123,4 +131,6 @@ cat << EOF
 | Run 'systemctl start miner-zec-ewbf' to start now!        |
 +===========================================================+
 EOF
+
+#!/usr/bin/env bash
 
