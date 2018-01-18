@@ -35,8 +35,9 @@ Pre-Requisites
 
 1. A working, contemporary Ubuntu installation (see chart above).
 2. A ZCash t-address
-3. (optional) a DataDog API key for your DataDog account
-4. A modern NVidia GPU
+3. A modern NVidia GPU
+4. (optional) a DataDog API key for your DataDog account
+
 
 Installation
 -------------------------
