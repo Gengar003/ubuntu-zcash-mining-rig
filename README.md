@@ -1,6 +1,3 @@
-THIS IS NOT READY
-=====
-
 NVidia ZCash Miner on Ubuntu
 ==============================
 
@@ -31,7 +28,7 @@ Pre-Requisites
 
 | Ubuntu Version | Tested? | Works? |
 | -------------- | ------- | ------ |
-| Desktop 17.10  |         |        |
+| Desktop 17.10  | ✔       | ✔      |
 | Desktop 16.04  |         |        |
 | Server 17.10   | ✔       | ✔      |
 | Server 16.04   |         |        |
