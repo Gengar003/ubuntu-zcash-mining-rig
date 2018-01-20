@@ -14,11 +14,11 @@ User=${MINER_USER}
 PermissionsStartOnly=true
 WorkingDirectory=/opt/miners/zec
 
-ExecStartPre=/bin/bash --login -c '/usr/bin/X & sleep 5; ${SET_GPU_FANS_ON_START}; sleep 5; /usr/bin/pkill X'
+ExecStartPre=/bin/bash --login -c '${SET_GPU_FANS_ON_START}'
 
-ExecStart=/bin/bash --login -c "/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices 0 1 --fee 0 --intensity 64 --eexit"
+ExecStart=/bin/bash --login -c "/opt/miners/zec/ewbf --server eu1-zcash.flypool.org --user ${ZCASH_ADDRESS}.${HOSTNAME} --pass x --port 3333 --cuda_devices ${GPU_INDICIES} --fee 0 --intensity 64 --eexit"
 
-ExecStop=/bin/bash --login -c '/usr/bin/X & sleep 5; ${SET_GPU_FANS_ON_END}; sleep 5; /usr/bin/pkill X'
+ExecStop=/bin/bash --login -c '${SET_GPU_FANS_ON_END}'
 
 Restart=always
 RestartSec=10

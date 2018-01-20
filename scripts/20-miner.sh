@@ -83,14 +83,18 @@ else
 	# user specified a "fan during mining" setting.
 	# nvidia-settings must be used, and it must be given a "working" display.
 
+	SET_GPU_FANS_ON_START="/usr/bin/nvidia-settings"
+	SET_GPU_FANS_ON_END="/usr/bin/nvidia-settings"
+	GPU_INDICIES=""
+
+	HEADLESS_INSTALL="false"
+
 	if id -u gdm >/dev/null 2>&1; then
 		# This is (probably) Ubuntu "Desktop"
-		export NVIDIA_FAN_DISPLAY=:1
-		export NVIDIA_FAN_XAUTHORITY=/run/user/$(id -u gdm)/gdm/Xauthority
+		HEADLELSS_INSTALL="false"
 	elif id -u lightdm > /dev/null 2>&1; then
 		# This is (probably) Ubuntu "Server"
-		export NVIDIA_FAN_DISPLAY=:0
-		export NVIDIA_FAN_XAUTHORITY=/var/run/lightdm/root/${NVIDIA_FAN_DISPLAY}
+		HEADLESS_INSTALL="true"
 	else
 		# This probably isn't going to work.
 		echo "ERROR: Explicit fan control requested, but this requires nvidia-settings which requires a display, and I couldn't find any displays that I knew would work."
@@ -98,16 +102,28 @@ else
 		exit 1
 	fi
 
+	if [ true = "${HEADLESS_INSTALL}" ]; then
+		export NVIDIA_FAN_DISPLAY=:0
+		export NVIDIA_FAN_XAUTHORITY="/var/run/lightdm/root/${NVIDIA_FAN_DISPLAY}"
+	else
+		export NVIDIA_FAN_DISPLAY=:0
+		export NVIDIA_FAN_XAUTHORITY="/run/user/$(id -u gdm)/gdm/Xauthority"
+	fi
+
 	export EXPORTED_FAN_DURING_MINING=${FAN_DURING_MINING}
 
-	SET_GPU_FANS_ON_START="/usr/bin/nvidia-settings"
-	SET_GPU_FANS_ON_END="/usr/bin/nvidia-settings"
 	for gpu_index in $(nvidia-smi --query-gpu=index --format=csv,noheader,nounits); do
 		export SET_GPU_FANS_ON_START="${SET_GPU_FANS_ON_START} -a \"[gpu:${gpu_index}]/GPUFanControlState=1\" -a \"[fan:${gpu_index}]/GPUTargetFanSpeed=\${FAN_DURING_MINING}\""
 		export SET_GPU_FANS_ON_END="${SET_GPU_FANS_ON_END} -a \"[gpu:${gpu_index}]/GPUFanControlState=0\""
+		export GPU_INDICIES="${GPU_INDICIES} ${gpu_index} "
 	done
 
-	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS},${EXPORTED_FAN_DURING_MINING},${NVIDIA_FAN_DISPLAY},${NVIDIA_FAN_XAUTHORITY},${SET_GPU_FANS_ON_START},${SET_GPU_FANS_ON_END}' \
+	if [ true = "${HEADLESS_INSTALL}" ]; then
+		export SET_GPU_FANS_ON_START="/usr/bin/X & sleep 5; ${SET_GPU_FANS_ON_START}; sleep 5; /usr/bin/pkill X"
+		export SET_GPU_FANS_ON_END="/usr/bin/X & sleep 5; ${SET_GPU_FANS_ON_END}; sleep 5; /usr/bin/pkill X"
+	fi
+
+	envsubst '${MINER_USER},${HOSTNAME},${EXPORTED_ZCASH_ADDRESS},${EXPORTED_FAN_DURING_MINING},${NVIDIA_FAN_DISPLAY},${NVIDIA_FAN_XAUTHORITY},${SET_GPU_FANS_ON_START},${SET_GPU_FANS_ON_END},${GPU_INDICIES}' \
 		< ../resources/miner/etc/systemd/system/miner-zec-ewbf-fan.service.template \
 		> /tmp/miner-zec-ewbf.service
 fi
