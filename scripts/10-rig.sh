@@ -34,7 +34,7 @@ done
 [ -e ~/.ssh/id_rsa ] || ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
 
 # install tools we'll use later
-sudo apt-get install -y jq curl openssh-server openssh-client ubuntu-drivers
+sudo apt-get install -y jq curl openssh-server openssh-client ubuntu-drivers-common
 
 # remove other useless things
 sudo apt-get -y autoremove
