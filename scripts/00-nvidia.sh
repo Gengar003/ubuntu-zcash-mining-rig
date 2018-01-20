@@ -84,6 +84,9 @@ sudo pkill plymouth || true # (it might not be running...)
 # update apt; we're ready
 sudo apt-get update
 
+# TODO: eventually figure out how to compute LATEST_NVIDIA_CUDA_DRIVERS w/out gawk
+sudo apt-get install -y gawk
+
 # install nvidia drivers
 LATEST_NVIDIA_DRIVER=$(sudo ubuntu-drivers devices | awk '/driver.*?nvidia/{print $3}' | sort -r | head -n 1)
 LATEST_CUDA_NVIDIA_DRIVER=$(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends cuda | gawk 'match($0, /(nvidia-[0-9]+)/, ary) {print ary[1]}' | sort -r | head -n 1)
