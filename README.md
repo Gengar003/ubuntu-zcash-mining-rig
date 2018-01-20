@@ -78,6 +78,7 @@ MINER_USER=$(whoami) envsubst < \
 
 * You must not have full-disk encryption enabled.
 * You must not have "home directory" encryption enabled.
+* You will be unable to log out, so anyone with physical access to the machine will be able to access your account.
 
 Setup Modules
 ==============================
