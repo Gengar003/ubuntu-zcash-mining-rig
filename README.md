@@ -60,7 +60,7 @@ Installation
 3. When setup completes successfully, run `systemctl start miner-zec-ewbf`.
 4. Done!
 
-* *Note:* If you change your GPU hardware or the machine's `hostname`, you will need to run these scripts again.
+**Note:** If you change your GPU hardware or the machine's `hostname`, you will need to run these scripts again.
 
 Advanced Setup
 ==============================
@@ -108,7 +108,7 @@ In this case, use the `--nvidia-ubuntu-version` flag to provide the correct iden
 
 The script will instruct you to do this if necessary.
 
-*Note:*
+**Note:**
 
 Nvidia driver installation itself is _not_ actully idempotent; the script leaves a breadcrumb in `~/.nvidia-version`
 so it can know if the correct drivers have already been installed and skip installing them if they are already present.
