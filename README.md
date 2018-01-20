@@ -1,3 +1,6 @@
+THIS IS NOT READY
+=====
+
 NVidia ZCash Miner on Ubuntu
 ==============================
 
@@ -104,6 +107,11 @@ It may be that the latest NVidia drivers are `1704`, but your Ubuntu installatio
 In this case, use the `--nvidia-ubuntu-version` flag to provide the correct identifier, e.g. `--nvidia-ubuntu-version 1704`.
 
 The script will instruct you to do this if necessary.
+
+*Note:*
+
+Nvidia driver installation itself is _not_ actully idempotent; the script leaves a breadcrumb in `~/.nvidia-version`
+so it can know if the correct drivers have already been installed and skip installing them if they are already present.
 
 `10-rig.sh`
 -------------------------

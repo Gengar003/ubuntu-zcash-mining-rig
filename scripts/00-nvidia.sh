@@ -91,14 +91,14 @@ sudo apt-get install -y gawk
 LATEST_NVIDIA_DRIVER=$(sudo ubuntu-drivers devices | awk '/driver.*?nvidia/{print $3}' | sort -r | head -n 1)
 LATEST_CUDA_NVIDIA_DRIVER=$(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends cuda | gawk 'match($0, /(nvidia-[0-9]+)/, ary) {print ary[1]}' | sort -r | head -n 1)
 
-if [ -e ~/.nvidia-driver ]; then
+if [ -e ~/.nvidia-version ]; then
 	# nvidia drivers have been installed BY THIS SCRIPT previously.
-	CURRENT_NVIDIA_DRIVER=$(cat ~/.nvidia-driver)
+	CURRENT_NVIDIA_DRIVER=$(cat ~/.nvidia-version)
 
 	if [ "${CURRENT_NVIDIA_DRIVER}" != "${LATEST_CUDA_NVIDIA_DRIVER}" ]; then
 		# cuda wants a different nvidia driver version than what is installed.
 		# need to purge all nvidia drivers and re-install
-		rm -f ~/.nvidia-driver
+		rm -f ~/.nvidia-version
 		sudo apt-get purge -y nvidia-*
 	fi
 else
@@ -107,11 +107,16 @@ else
 	sudo apt-get purge -y nvidia-*
 fi
 
-# sometimes nvidia drivers run ahead of what CUDA supports. Don't install them.
-# sudo apt-get install -y ${NVIDIA_DRIVER}
+if [ ! -e ~/.nvidia-version ]; then
+	# Drivers are NOT installed.
+	# install them.
 
-# install (latest) CUDA drivers
-sudo apt-get install -y cuda nvidia-settings
+	# sometimes nvidia drivers run ahead of what CUDA supports. Don't install them.
+	# sudo apt-get install -y ${NVIDIA_DRIVER}
+
+	# install (latest) CUDA drivers
+	sudo apt-get install -y cuda nvidia-settings
+fi
 
 # Remove non-nvidia drivers
 sudo apt-get purge -y xserver-xorg-video-nouveau
