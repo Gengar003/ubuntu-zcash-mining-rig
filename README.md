@@ -266,3 +266,54 @@ Running off USB
 If you run these scripts off of a USB drive, that drive must use a file system that supports POSIX-style permissoins (i.e. can `chmod`).
 
 If your USB drive does not (e.g. if it's formatted with the very-common `fat32` format), you must copy these scripts off of it, first.
+
+Can't Set Fan Speed During Mining
+-------------------------
+
+If you provided the `--fan-during-mining <%speed>` flag while installing
+but the fans are _not_ actually operating at that speed while mining
+(as shown by `nvidia-smi --query-gpu=fan.speed --format=csv`), check
+the logs for the miner with `journalctl -u miner-zec-ewbf --lines 100`.
+
+If you see something like this:
+
+	bash[1382]: ERROR: Error assigning value 100 to attribute 'GPUTargetFanSpeed'
+	bash[1382]:        (hostname:0[fan:0]) as specified in assignment
+	bash[1382]:        '[fan:0]/GPUTargetFanSpeed=100' (Unknown Error).
+
+There can be at least two different causes:
+
+### No Coolbits
+
+If `/etc/X11/xorg.conf` does not contain the "Coolbits" setting, `nvidia-settings` won't allow you to control fans directly.
+
+Run `nvidia-xconfig --cool-bits=4` and then check `/etc/X11/xorg.conf` for a section similar to this:
+
+	Section "Screen"
+	    Identifier     "Screen1"
+	    Device         "Device1"
+	    Monitor        "Monitor1"
+	    DefaultDepth    24
+	    Option         "Coolbits" "4"
+	    Option         "AllowEmptyInitialConfiguration" "True"
+	    SubSection     "Display"
+	        Depth       24
+	    EndSubSection
+	EndSection
+
+If it's there, then either you just fixed the issue _or_ that wasn't the issue.
+You'll need to restart X before the changes take effect; the simplest way to do that is to reboot.
+
+### Busted Driver Installation
+
+It could be that something's gone wrong with the graphics drivers.
+This can happen if you `apt-get install ...` nvidia drivers more than one time.
+
+The only way I know to fix this is to completely remove them, reboot, and reinstall:
+
+	sudo apt-get purge -y nvidia-* cuda* nouveau*
+	sudo apt-get autoremove -y
+	rm ~/.nvidia-version
+	sudo reboot
+
+After that, run the installation scripts again.
