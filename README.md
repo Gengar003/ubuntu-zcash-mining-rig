@@ -215,8 +215,8 @@ instances:
 
 ### Hashrate ###
 
-* Config: [`/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml)
-* Check: [`/etc/dd-agent/checks.d/systemd-unit-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/systemd-unit-hashrate.py)
+* Config: [`/etc/dd-agent/conf.d/systemd-unit-hashrate.yaml`](resources/datadog/etc/dd-agent/conf.d/systemd-journal-hashrate.yaml)
+* Check: [`/etc/dd-agent/checks.d/systemd-unit-hashrate.py`](resources/datadog/etc/dd-agent/checks.d/systemd-journal-hashrate.py)
 * Metric: `gpu.hashrate`
 
 | Configuration Key          | Type          | Purpose                                   |
